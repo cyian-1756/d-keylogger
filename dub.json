@@ -1,0 +1,12 @@
+{
+	"name": "d-keylogger",
+	"authors": [
+		"cyian-1756"
+	],
+	"dependencies": {
+		"x11": "~>1.0.19"
+	},
+	"description": "A X11 keylogger",
+	"copyright": "Copyright © 2018, cyian-1756",
+	"license": "MIT"
+}
