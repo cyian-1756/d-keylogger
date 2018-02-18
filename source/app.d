@@ -34,11 +34,14 @@ void main() {
         XNextEvent(d, &ev);
         switch (ev.type) {
             case FocusOut:
-                if (curFocus != root)
+                if (curFocus != root) {
                     XSelectInput(d, curFocus, 0);
+				}
+				
                 XGetInputFocus(d, &curFocus, &revert);
-                if (curFocus == PointerRoot)
+                if (curFocus == PointerRoot) {
                     curFocus = root;
+				}
                 XSelectInput(d, curFocus, KeyPressMask|KeyReleaseMask|FocusChangeMask);
                 break;
 
