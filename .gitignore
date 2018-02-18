@@ -22,3 +22,9 @@ docs/
 
 # Code coverage
 *.lst
+
+# The compiled executable
+d-keylogger
+
+# The keylog
+test.txt
