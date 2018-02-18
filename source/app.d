@@ -28,8 +28,7 @@ void main() {
     int revert;
 	XGetInputFocus(d, &curFocus, &revert);
     XSelectInput(d, curFocus, KeyPressMask|KeyReleaseMask|FocusChangeMask);
-	while (true)
-    {
+	while (true) {
         XEvent ev;
         XNextEvent(d, &ev);
         switch (ev.type) {
@@ -37,10 +36,13 @@ void main() {
                 if (curFocus != root) {
                     XSelectInput(d, curFocus, 0);
 				}
-				
+		
                 XGetInputFocus(d, &curFocus, &revert);
                 if (curFocus == PointerRoot) {
                     curFocus = root;
+				}
+				debug {
+					writefln("Current focus is: %d", curFocus);
 				}
                 XSelectInput(d, curFocus, KeyPressMask|KeyReleaseMask|FocusChangeMask);
                 break;
