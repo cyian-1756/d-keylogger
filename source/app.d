@@ -26,13 +26,13 @@ void main() {
     XComposeStatus comp;
     int len;
     int revert;
+	string currentWindowName;
 	XGetInputFocus(d, &curFocus, &revert);
     XSelectInput(d, curFocus, KeyPressMask|KeyReleaseMask|FocusChangeMask);
 	while (true) {
         XEvent ev;
         XNextEvent(d, &ev);
         switch (ev.type) {
-            case FocusOut:
                 if (curFocus != root) {
                     XSelectInput(d, curFocus, 0);
 				}
@@ -41,10 +41,11 @@ void main() {
                 if (curFocus == PointerRoot) {
                     curFocus = root;
 				}
-				debug {
-					writefln("Current focus is: %d", curFocus);
-				}
                 XSelectInput(d, curFocus, KeyPressMask|KeyReleaseMask|FocusChangeMask);
+				currentWindowName = getFocusedWindowName(d, curFocus);
+				debug {
+					writefln("Current focus is: %d", curFocus);					
+				}
                 break;
 
             case KeyPress:
@@ -131,4 +132,29 @@ extern (C) int foo(_XDisplay*, XErrorEvent*) nothrow
 		printf("There was an X error\n");
 	}
     return 0;
+}
+
+// This returns the name of the current focused window inside some []
+// or the string [???] if the window is nameless
+string getFocusedWindowName(_XDisplay* d, ulong focus) {
+	char* winName;
+	XFetchName(d, focus, &winName);
+	if (winName == null) {
+		// Focus might be a child window so we try to
+		// get the parent window id
+		Window parent;
+		Window root;
+		uint nchildren;
+		Window* children;
+		int wasChild = XQueryTree(d, focus, &root, &parent, &children, &nchildren);
+		if (wasChild == 1) {
+			XFetchName(d, parent, &winName);
+		} else {
+			debug {
+				writefln("Window %d has no name", focus);
+			}
+			return "[???]";
+		}
+	}
+	return "[" ~ to!string(winName) ~ "]";
 }
