@@ -12,6 +12,8 @@ This program uses the x11 bindings to log key strokes on linux (And maybe other 
 
 * Xor encryption of the keylogs both in memory and on disk
 
+* Catches SIGTERM and SIGINT and writes the keylog to disk before exiting
+
 ## Build
 
 Build with `dub build` 
