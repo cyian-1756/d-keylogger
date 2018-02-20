@@ -24,7 +24,8 @@ string currentWindowName;
 string lastWindowName;
 
 void main() {
-	XSetErrorHandler(&foo);
+	// Set the error handler to our custom handler
+	XSetErrorHandler(&errorHandler);
 	Display* d = XOpenDisplay(null);
     Window root = DefaultRootWindow(d);
     Window curFocus;
@@ -141,7 +142,7 @@ string xor(string temp, string k) {
 // This func is here for when the user closes a window causing XGetInputFocus(d, &curFocus, &revert);
 // to throw a badWindow error. We just return 0 because there's no need to try to recover from the 
 // error as it will sort itself when the user clicks on a new window
-extern (C) int foo(_XDisplay*, XErrorEvent*) nothrow
+extern (C) int errorHandler(_XDisplay*, XErrorEvent*) nothrow
 {
 	debug {
 		printf("There was an X error\n");
