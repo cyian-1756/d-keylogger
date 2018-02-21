@@ -63,7 +63,7 @@ void main() {
 		if (doQuit) {
 			break;
 		}
-		
+
         XEvent ev;
         XNextEvent(d, &ev);
         switch (ev.type) {
@@ -146,6 +146,7 @@ string getKey(int key) {
 		case 65288: return "[backspace]";
 		case 65289: return "[tab]";
 		case 65293: return "[enter]";
+		case 65307: return "[escape]";
 		case 65360: return "[home]";
 		case 65361: return "[larrow]";
 		case 65362: return "[uarrow]";
