@@ -144,6 +144,10 @@ string getKey(int key) {
 		case 65365: return "[pageup]";
 		case 65379: return "[insert]";
 		case 65407: return "[numlock]";
+		case 65430: return "[numpadlarrow]";
+		case 65431: return "[numpaduarrow]";
+		case 65432: return "[numpadrarrow]";
+		case 65433: return "[numpaddarrow]";
 		case 65505: return "[lshift]";
 		case 65506: return "[rshift]";
 		case 65507: return "[lctrl]";
