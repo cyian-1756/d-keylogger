@@ -89,7 +89,15 @@ void main() {
 					logKey(pressedkey);
 				} else {
                 	buf[len]=0;
-                	logKey(to!string(buf[0]));
+					// Check if XLookupString failed to return a value for the key code
+					if (buf[0] == '\0') {
+						debug {
+							writefln("Could not key for keycode %d", cast(int)ks);
+						}
+						logKey("[" ~ to!string(cast(int)ks) ~ "]");
+					} else {
+						logKey(to!string(buf[0]));
+					}
 				}
 				debug {
 					writefln("Key code: %d", cast(int)ks);
@@ -142,12 +150,17 @@ string getKey(int key) {
 		case 65363: return "[rarrow]";
 		case 65364: return "[darrow]";
 		case 65365: return "[pageup]";
+		case 65367: return "[end]";
 		case 65379: return "[insert]";
 		case 65407: return "[numlock]";
+		case 65421: return "[numlockenter]";
+		case 65429: return "[numpadhome]";
 		case 65430: return "[numpadlarrow]";
 		case 65431: return "[numpaduarrow]";
 		case 65432: return "[numpadrarrow]";
 		case 65433: return "[numpaddarrow]";
+		case 65434: return "[numpadpageup]";
+		case 65435: return "[numpadpagedown]";
 		case 65505: return "[lshift]";
 		case 65506: return "[rshift]";
 		case 65507: return "[lctrl]";
