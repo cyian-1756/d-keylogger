@@ -170,6 +170,18 @@ string getKey(int key) {
 		case 65433: return "[numpaddarrow]";
 		case 65434: return "[numpadpageup]";
 		case 65435: return "[numpadpagedown]";
+		case 65470: return "[fn1]";
+		case 65471: return "[fn2]";
+		case 65472: return "[fn3]";
+		case 65473: return "[fn4]";
+		case 65474: return "[fn5]";
+		case 65475: return "[fn6]";
+		case 65476: return "[fn7]";
+		case 65477: return "[fn8]";
+		case 65478: return "[fn9]";
+		case 65479: return "[fn10]";
+		case 65480: return "[fn11]";
+		case 65481: return "[fn12]";
 		case 65505: return "[lshift]";
 		case 65506: return "[rshift]";
 		case 65507: return "[lctrl]";
