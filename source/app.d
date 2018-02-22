@@ -152,6 +152,7 @@ string getKey(int key) {
 		case 65288: return "[backspace]";
 		case 65289: return "[tab]";
 		case 65293: return "[enter]";
+		case 65299: return "[pause]";
 		case 65307: return "[escape]";
 		case 65360: return "[home]";
 		case 65361: return "[larrow]";
